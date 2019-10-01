@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Welcome to LogicEngine
 
 LogicEngine is a fast and efficient Logic Simulator.
