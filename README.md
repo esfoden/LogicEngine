@@ -1,6 +1,4 @@
----
-layout: default
----
+
 
 # Welcome to LogicEngine
 
