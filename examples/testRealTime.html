@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<style>
+    .dont-break-out {
+
+        /* These are technically the same, but use both */
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+
+        -ms-word-break: break-all;
+        /* This is the dangerous one in WebKit, as it breaks things wherever */
+        word-break: break-all;
+        /* Instead use this non-standard one: */
+        word-break: break-word;
+
+        /* Adds a hyphen where the word breaks, if supported (No Blink) */
+        -ms-hyphens: auto;
+        -moz-hyphens: auto;
+        -webkit-hyphens: auto;
+        hyphens: auto;
+
+    }
+</style>
+
+<body>
+    <div id="display">
+
+        <button id="playButton" onclick="pause();">pause</button>
+        <button id="resetButton"
+            onclick="publish({ topic : 'resetSimulation', absolute: 0, duration : 1000, resetPin: 'por_l' });">reset</button>
+        <button id="debugButton" onclick="publish({ topic : 'debugClicked' });">debug</button>
+
+        <input type="button" value="Submit" class="btn">
+    </div>
+    <div id="output" class="dont-break-out">
+    </div>
+    <script src="https://esfoden.github.io/LogicEngine/dist/require.js"></script>
+
+    <script>
+        function replaceText(el, text) {
+            var ee = document.getElementById(el);
+            if (!ee)
+                return undefined;
+            ee.innerHTML = text + "";
+            return 0;
+        };
+
+        function appendText(el, text) {
+            var ee = document.getElementById(el);
+            if (!ee)
+                return undefined;
+            ee.innerHTML += text + "<br>";
+            return 0;
+        };
+        var publish, subscribe, pause;
+        requirejs(['https://esfoden.github.io/LogicEngine/dist/LogicEngine.js'], function (engine) {
+            publish = engine.publish;
+            subscribe = engine.subscribe;
+            var timer = 0;
+
+            subscribe('ready', function () {
+                appendText("display", "ok");
+                publish({
+                    topic: "read",
+                    file: 'pVia.json',
+                    dump: true
+                }); //         pub({ topic : "check" });
+                //         pub({ topic : "dumptable", element: "console" } );
+            });
+            subscribe("consumed", function () {
+                publish({
+                    topic: 'resetSimulation'
+                });
+                //            lib.stamp("start");
+                publish({
+                    topic: 'step'
+                });
+                setInterval(function () {
+                    publish({
+                        topic: 'schedule',
+                        id: "timeout",
+                        value: ++timer
+                    });
+                }, 1000);
+            });
+            subscribe("finished", function () {
+                console.log('finished');
+            });
+
+            var count = 0,
+                last = 0,
+                limit = 200000,
+                paused = false;
+
+            pause = function () {
+                paused = !paused;
+                if (!paused) {
+                    publish({
+                        topic: 'simAdvance'
+                    });
+                }
+            }
+
+            subscribe("simAdvance", function (m) {
+                //console.log('sim time:', m.time);
+                if (++count < limit) {
+                    if (!paused) {
+                        publish({
+                            topic: 'step'
+                        });
+                    }
+                } else {
+                    publish({
+                        topic: 'finished'
+                    });
+                }
+            });
+            subscribe("displayText", function (d) {
+                var elapsed = count - last;
+                last = count;
+                replaceText("output", "<p>" + elapsed + " fibs per second</p>" + d.data[0]);
+            });
+
+            subscribe("read", function (mm) {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    if (xmlhttp.status == 200 && xmlhttp.readyState == 4) {
+                        mm.txt = xmlhttp.responseText;
+                        publish({
+                            topic: "processText",
+                            txt: mm.txt
+                        });
+                    }
+                };
+                xmlhttp.open("GET", mm.file, true);
+                xmlhttp.send();
+            });
+
+        });
+    </script>
+</body>
+
+</html>
