@@ -8,13 +8,14 @@
         root.LogicEngine = factory();
     }
 }(this, function () {
-
+    
     var isAMD = typeof define === 'function' && define.amd,
-        isNode = typeof exports === 'object' && typeof module !== 'undefined';
+    isNode = typeof exports === 'object' && typeof module !== 'undefined';
 
     var engineTopics = Object.create(null);
     var engineError = Error;
-    var wName = 'pWorker.min'; //'obfuscated';
+    var wName = 'pWorker'; //'obfuscated';
+    var wFile = './'+ wName +'.js';
     var send, bHubReady = false,
         pubBuffer = [];
 
@@ -74,21 +75,9 @@
             hubChild.send(mm);
         };
     } else {
-        var err = new Error();
-        var link = err.stack.split('(');
-        link = link[1];
-        link = link.split(')')[0];
-        link = link.split(':');
-        link.splice(-2, 2);
-        link = link.join(':');
-
-        var path = link.substring(0, link.lastIndexOf('/'));
-
-        var wFile = path + '/' + wName + '.js';
-
         var worker;
         if (typeof Worker !== 'undefined') {
-            worker = new Worker(wFile);
+            worker = new Worker( wFile );
 
             worker.onerror = function (event) {
                 engineError(event.message + event);
@@ -104,7 +93,7 @@
             require({
                     baseUrl: "./"
                 },
-                [wName],
+                [ wName ],
                 function (iworker) {
                     send = function (mm) {
                         iworker.receive(mm);
