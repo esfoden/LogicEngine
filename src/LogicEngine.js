@@ -15,7 +15,7 @@
     var engineTopics = Object.create(null);
     var engineError = Error;
     var wName = 'pWorker'; //'obfuscated';
-    var wFile = '../src/' + wName + '.js';
+    var wFile = './' + wName + '.js';
     var send, bHubReady = false,
         pubBuffer = [];
 
