@@ -34,7 +34,7 @@
     </div>
     <div id="output" class="dont-break-out">
     </div>
-    <script src="https://esfoden.github.io/LogicEngine/dist/require.js"></script>
+    <script src="https://esfoden.github.io/LogicEngine/src/require.min.js"></script>
 
     <script>
         function replaceText(el, text) {
@@ -53,8 +53,8 @@
             return 0;
         };
         var publish, subscribe, pause;
-        //        requirejs(['https://esfoden.github.io/LogicEngine/dist/LogicEngine.js'], function (engine) {
-        requirejs(['../src/LogicEngine.js'], function (engine) {
+        requirejs(['https://esfoden.github.io/LogicEngine/src/LogicEngine.js'], function (engine) {
+    //    requirejs(['../src/LogicEngine.js'], function (engine) {
             publish = engine.publish;
             subscribe = engine.subscribe;
             var timer = 0;
