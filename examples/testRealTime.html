@@ -53,12 +53,18 @@
             return 0;
         };
         var publish, subscribe, pause;
-        requirejs(['https://esfoden.github.io/LogicEngine/dist/LogicEngine.js'], function (engine) {
+        //        requirejs(['https://esfoden.github.io/LogicEngine/dist/LogicEngine.js'], function (engine) {
+        requirejs(['../src/LogicEngine.js'], function (engine) {
             publish = engine.publish;
             subscribe = engine.subscribe;
             var timer = 0;
 
             subscribe('ready', function () {
+/*                publish({
+                    topic: "url",
+                    url: document.location
+                });*/
+
                 appendText("display", "ok");
                 publish({
                     topic: "read",
