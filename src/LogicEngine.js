@@ -80,6 +80,8 @@
         if (typeof Worker !== 'undefined') {
             var url = document.location;
             var wFile2 = url.origin + "/LogicEngine/src/" + wName + ".js";
+            var wFile3 = "https://esfoden.github.io/LogicEngine/src/"+wName+".js";
+
             worker = new Worker(wFile2);
 
             worker.onerror = function (event) {
