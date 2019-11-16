@@ -78,6 +78,7 @@
 
         var worker;
         if (typeof Worker !== 'undefined') {
+            var url = document.location;
             worker = new Worker(wFile);
 
             worker.onerror = function (event) {
