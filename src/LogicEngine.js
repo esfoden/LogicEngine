@@ -79,7 +79,8 @@
         var worker;
         if (typeof Worker !== 'undefined') {
             var url = document.location;
-            worker = new Worker(wFile);
+            var wFile2 = url.origin + "/LogicEngine/src/" + wName + ".js";
+            worker = new Worker(wFile2);
 
             worker.onerror = function (event) {
                 engineError(event.message + event);
