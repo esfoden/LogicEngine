@@ -1,0 +1,307 @@
+{
+    "type": "Project",
+    "name": "animTest",
+    "author": "Simon Foden",
+    "date": "2/27/2019",
+    "version": "0.1",
+    "options": {
+        "PINDELIM": "_"
+    },
+    "library": {
+        "scaleSin": {
+            "type": "Module",
+            "interior": {
+                "scale": {
+                    "type": "mul2",
+                    "px": "200",
+                    "py": "100",
+                    "pins": {
+                        "a": {
+                            "type": "Input",
+                            "connect": "k"
+                        },
+                        "b": {
+                            "type": "Input",
+                            "connect": "x"
+                        }
+                    }
+                },
+                "sine": {
+                    "type": "sin",
+                    "px": "400",
+                    "py": "100",
+                    "pins": {
+                        "i": {
+                            "type": "Input",
+                            "connect": "scale"
+                        }
+                    }
+                },
+                "x": {
+                    "type": "TermIn",
+                    "px": "100",
+                    "py": "50"
+                },
+                "k": {
+                    "type": "TermIn",
+                    "px": "100",
+                    "py": "150"
+                },
+                "sinkx": {
+                    "type": "TermOut",
+                    "connect": "sine",
+                    "px": "500",
+                    "py": "100"
+                }
+            }
+        },
+        "setAttribute": {
+            "type": "Module",
+            "interior": {
+                "pub": {
+                    "type": "pubArray",
+                    "data": "setAttribute",
+                    "px": "500",
+                    "py": "20",
+                    "pins": {
+                        "i0": {
+                            "type": "Input",
+                            "connect": "el"
+                        },
+                        "i1": {
+                            "type": "Input",
+                            "connect": "attr"
+                        },
+                        "i2": {
+                            "type": "Input",
+                            "connect": "prop"
+                        },
+                        "i3": {
+                            "type": "Input",
+                            "connect": "val"
+                        }
+                    }
+                },
+                "el": {
+                    "type": "TermIn",
+                    "px": "100",
+                    "py": "50"
+                },
+                "attr": {
+                    "type": "TermIn",
+                    "px": "100",
+                    "py": "150"
+                },
+                "prop": {
+                    "type": "TermIn",
+                    "px": "100",
+                    "py": "150"
+                },
+                "val": {
+                    "type": "TermIn",
+                    "px": "100",
+                    "py": "150"
+                }
+            }
+        },
+        "top": {
+            "type": "Module",
+            "pins": {},
+            "interior": {
+                "time": {
+                    "type": "buffer",
+                    "px": "100",
+                    "py": "300"
+                },
+                "lowF": {
+                    "type": "Constant",
+                    "value": 0.000417,
+                    "px": "125",
+                    "py": "50"
+                },
+                "hiF": {
+                    "type": "Constant",
+                    "value": 0.000823,
+                    "px": "125",
+                    "py": "300"
+                },
+                "modulate": {
+                    "type": "mul2",
+                    "px": "125",
+                    "py": "300",
+                    "pins": {
+                        "a": {
+                            "type": "Input",
+                            "connect": "losin",
+                            "cPin": "sinkx"
+                        },
+                        "b": {
+                            "type": "Input",
+                            "connect": "hisin",
+                            "cPin": "sinkx"
+                        }
+                    }
+                },
+                "scaleModulate": {
+                    "type": "mul2",
+                    "px": "125",
+                    "py": "300",
+                    "pins": {
+                        "a": {
+                            "type": "Input",
+                            "connect": "mScale"
+                        },
+                        "b": {
+                            "type": "Input",
+                            "connect": "modulate"
+                        }
+                    }
+                },
+                "losin": {
+                    "type": "scaleSin",
+                    "px": "250",
+                    "py": "50",
+                    "pins": {
+                        "x": {
+                            "type": "Input",
+                            "connect": "time"
+                        },
+                        "k": {
+                            "type": "Input",
+                            "connect": "lowF"
+                        },
+                        "sinkx": {
+                            "type": "Output"
+                        }
+                    }
+                },
+                "hisin": {
+                    "type": "scaleSin",
+                    "px": "250",
+                    "py": "200",
+                    "pins": {
+                        "x": {
+                            "type": "Input",
+                            "connect": "time"
+                        },
+                        "k": {
+                            "type": "Input",
+                            "connect": "hiF"
+                        },
+                        "sinkx": {
+                            "type": "Output"
+                        }
+                    }
+                },
+                "logoElement": {
+                    "type": "Constant",
+                    "value": "logo",
+                    "px": "125",
+                    "py": "50"
+                },
+                "logoAttribute": {
+                    "type": "Constant",
+                    "value": "transform",
+                    "px": "125",
+                    "py": "100"
+                },
+                "logoProperty": {
+                    "type": "Constant",
+                    "value": "rotate",
+                    "px": "125",
+                    "py": "100"
+                },
+                "mScale": {
+                    "type": "Constant",
+                    "value": "30",
+                    "px": "125",
+                    "py": "100"
+                },
+                "rotateLogo": {
+                    "type": "setAttribute",
+                    "px": "500",
+                    "py": "120",
+                    "pins": {
+                        "el": {
+                            "type": "Input",
+                            "connect": "logoElement"
+                        },
+                        "attr": {
+                            "type": "Input",
+                            "connect": "logoAttribute"
+                        },
+                        "prop": {
+                            "type": "Input",
+                            "connect": "logoProperty"
+                        },
+                        "val": {
+                            "type": "Input",
+                            "connect": "scaleModulate"
+                        }
+                    }
+                },                
+                "circleElement": {
+                    "type": "Constant",
+                    "value": "circ",
+                    "px": "125",
+                    "py": "50"
+                },
+                "circleProperty": {
+                    "type": "Constant",
+                    "value": "scale",
+                    "px": "125",
+                    "py": "100"
+                },
+                "cScale": {
+                    "type": "Constant",
+                    "value": "10",
+                    "px": "125",
+                    "py": "100"
+                },
+                "scaleLo": {
+                    "type": "mul",
+                    "px": "125",
+                    "py": "300",
+                    "pins": {
+                        "i0": {
+                            "type": "Input",
+                            "connect": "cScale"
+                        },
+                        "i1": {
+                            "type": "Input",
+                            "connect": "modulate"
+                        },
+                        "i2": {
+                            "type": "Input",
+                            "connect": "modulate"
+                        }
+                    }
+                },
+                "scaleCircle": {
+                    "type": "setAttribute",
+                    "px": "500",
+                    "py": "120",
+                    "pins": {
+                        "el": {
+                            "type": "Input",
+                            "connect": "circleElement"
+                        },
+                        "attr": {
+                            "type": "Input",
+                            "connect": "logoAttribute"
+                        },
+                        "prop": {
+                            "type": "Input",
+                            "connect": "circleProperty"
+                        },
+                        "val": {
+                            "type": "Input",
+                            "connect": "scaleLo"
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}

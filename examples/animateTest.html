@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<style>
+    #output {
+        width: 600px;
+        height: 400px;
+        margin: auto;
+        padding: 10px;
+        /* These are technically the same, but use both */
+
+    }
+</style>
+
+<body>
+    <div id="output">
+
+        <svg version="1.1" baseProfile="full" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+
+            <rect width="100%" height="100%" fill="red" />
+
+            <circle id="circ" cx="150" cy="100" r="100" fill="green" />
+
+            <text id="logo" x="250" y="225" font-size="80" text-anchor="middle" fill="white"> LogicEngine</text>
+
+        </svg>
+        <div id="display">
+           <button id="playButton" onclick="pause();">pause</button>
+        </div>
+    
+    </div>
+    <script src="../src/require.min.js"></script>
+
+    <script>
+        function replaceText(el, text) {
+            var ee = document.getElementById(el);
+            if (!ee)
+                return undefined;
+            ee.innerHTML = text + "";
+            return 0;
+        };
+
+        function appendText(el, text) {
+            var ee = document.getElementById(el);
+            if (!ee)
+                return undefined;
+            ee.innerHTML += text + "<br>";
+            return 0;
+        };
+        var publish, subscribe, start,
+            pause, paused = false;;
+        requirejs(['../src/LogicEngine.js'], function (engine) {
+            publish = engine.publish;
+            subscribe = engine.subscribe;
+            var timer = 0;
+
+            subscribe('ready', function () {
+                //                appendText("display", "  simulator ready");
+                publish({
+                    topic: "read",
+                    file: 'animTest.json',
+                    dump: true
+                }); //         pub({ topic : "check" });
+                //         pub({ topic : "dumptable", element: "console" } );
+            });
+
+            function step(timestamp) {
+                if (!start) start = timestamp;
+                var progress = timestamp - start;
+                if (!paused) {
+                    publish({
+                        topic: 'schedule',
+                        id: "time",
+                        value: timestamp
+                    });
+                    publish({
+                        topic: 'step'
+                    });
+                }
+                if (progress < 30000) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    publish({
+                        topic: 'finished'
+                    });
+                }
+            }
+            subscribe("consumed", function () {
+                publish({
+                    topic: 'resetSimulation'
+                });
+                //            lib.stamp("start");
+
+                window.requestAnimationFrame(step);
+            });
+            subscribe("finished", function () {
+                console.log('finished');
+                appendText("display", " simulation ended");
+            });
+            pause = function () {
+                paused = !paused;
+                if (!paused) {
+                    window.requestAnimationFrame(step);
+                }
+            }
+            subscribe("simAdvance", function (m) {
+                //console.log('sim time:', m.time);
+            });
+            subscribe("displayText", function (d) {
+                replaceText("output", "<p>" + d.data.join(" ") + " </p>");
+            });
+            subscribe("setAttribute", function (d) {
+                var dd = d.data;
+                if (isNaN(dd[3])) return;
+                var cc = document.getElementById(dd[0]);
+                cc.setAttribute(dd[1], "" + dd[2] + "(" + dd[3] + ")");
+            });
+
+            subscribe("read", function (mm) {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    if (xmlhttp.status == 200 && xmlhttp.readyState == 4) {
+                        mm.txt = xmlhttp.responseText;
+                        publish({
+                            topic: "processText",
+                            txt: mm.txt,
+                            dump: mm.dump
+                        });
+                    }
+                };
+                xmlhttp.open("GET", mm.file, true);
+                xmlhttp.send();
+            });
+
+        });
+    </script>
+</body>
+
+</html>
