@@ -3,7 +3,7 @@
 (function (root, factory) {
 
     var bigFile = './BigInteger.min';
-//    var bigFile = 'https://peterolson.github.io/BigInteger.js/BigInteger.min.js'
+    //    var bigFile = 'https://peterolson.github.io/BigInteger.js/BigInteger.min.js'
     if (typeof define === 'function' && define.amd) { // AMD
         define([bigFile], factory);
     } else if (typeof exports === 'object' && typeof module !== 'undefined') { //commonJS
@@ -14,6 +14,7 @@
         root.primLib = factory(root.bigInt);
     }
 }(this, function (BigNumber) {
+    var SIMTRUE = -1;
     var primlib = {
         buffer: {
             type: "Primitive",
@@ -40,12 +41,125 @@
                 return a + b;
             }
         },
-        andb: {
+        and2: {
             type: "add2",
             func: function (a, b) {
                 return a & b;
             }
         },
+        mul2: {
+            type: "add2",
+            func: function (a, b) {
+                return a * b;
+            }
+        },
+        sin: {
+            type: "buffer",
+            func: function (a) {
+                return Math.sin(a);
+            }
+        },
+        concat: {
+            type: "Primitive",
+            func: function () {
+                var tot = "";
+                for (var i = 0, len = arguments.length; i < len; i++) {
+                    var aa = arguments[i];
+                    if (aa === undefined) {
+                        return "";
+                    }
+                    tot += aa + "";
+                }
+                return tot;
+            }
+        },
+        add: {
+            type: "Primitive",
+            func: function () {
+                var tot = 0;
+                for (var i = 0, len = arguments.length; i < len; i++) {
+                    var v = parseFloat(arguments[i]);
+                    if (isNaN(v)) {
+                        return undefined;
+                    } else {
+                        tot += v;
+                    }
+                }
+                return tot;
+            }
+        },
+        mul: {
+            type: "add",
+            func: function () {
+                var tot = 1;
+                for (var i = 0, len = arguments.length; i < len; i++) {
+                    var v = parseFloat(arguments[i]);
+                    if (isNaN(v)) {
+                        tot = undefined;
+                        continue;
+                    }
+                    if (v === 0) {
+                        return 0;
+                    }
+                    if (!isNaN(tot)) {
+                        tot *= v;
+                    }
+                }
+                return tot;
+            }
+        },
+        or: {
+            type: "add",
+            func:function() {      // bitwise or
+                var tot = 0;
+                for( var i = 0,len = arguments.length; i < len; i++ ) {
+                     var v = parseInt(arguments[i]);
+                     if (isNaN(v)) {
+                         return undefined;
+                     } else {
+                         tot |= v;
+                     }
+                }
+                return tot;
+            }
+        },
+        xor: {
+            type: "add",
+            func:function() {      // bitwise xor
+                var tot = 0;
+                for( var i = 0,len = arguments.length; i < len; i++ ) {
+                     var v = parseInt(arguments[i]);
+                     if (isNaN(v)) {
+                         return undefined;
+                     } else {
+                         tot ^= v;
+                     }
+                }
+                return tot;
+            }
+        },
+        and: {
+            type: "add",
+            func:function() {       // bitwise and
+                var tot = SIMTRUE;
+                for( var i = 0,len = arguments.length; i < len; i++ ) {
+                     var v = parseInt(arguments[i]);
+                     if (isNaN(v)) {
+                           tot = undefined;
+                           continue;
+                     }
+                     if (v===0) {
+                           return 0;
+                     }
+                     if (!isNaN(tot)) {
+                           tot &= v;
+                     }
+                }
+                return tot;
+            }
+        },
+
+
         shiftreg: {
             type: "Primitive",
             pins: {
@@ -84,7 +198,7 @@
         addBig2: {
             type: "add2",
             func: function (a, b) {
-                return (a == undefined) || (b == undefined) ? undefined : BigNumber(a).plus(b);
+                return isNaN(a) || isNaN(b) ? undefined : BigNumber(a).plus(b);
             },
             "equals": "bigEquals"
         },
